@@ -10,11 +10,93 @@ import pandas as pd
 ############## Classification Model ####################
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.impute import SimpleImputer
 import matplotlib.pyplot as plt
+import os, sys, warnings
+
+
+def filter_warnings(stop_print=True):
+    """ Used for ignoring ConvergenceWarning Spam that come from terminating on max iterations
+        False: "default" = Print warnings in terminal
+        True: "ignore" = Do not print warnings in terminal """
+    if not stop_print:
+        state = "default"
+    else:
+        state = "ignore"
+    if not sys.warnoptions:
+        warnings.simplefilter("ignore")
+        os.environ["PYTHONWARNINGS"] = state
+
+
+def regression_quality(df):
+    df = df.replace({'quality': {
+        8: 'Good', 7: 'Good',
+        6: 'Average', 5: 'Average',
+        4: 'Bad', 3: 'Bad', }})
+
+    # Separate features (X) and target variable (y)
+    y = df["quality"]
+    X = df.drop("quality", axis=1)
+
+    # Impute missing values with the mean before split
+    imputer = SimpleImputer(strategy='mean')
+    X = imputer.fit_transform(X)
+
+    # First split testing and training sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=21, stratify=y)
+
+    # Create a Logistic Regression Model
+    logi_reg = LogisticRegression()
+
+    # Baseline Logistic Regression Model
+    filter_warnings()
+    logi_reg.fit(X_train, y_train)
+    filter_warnings(False)
+
+    # Baseline Training Set Predictions
+    print("Training Set (Baseline)")
+    base_train_predict = logi_reg.predict(X_train)
+    print(classification_report(y_train, base_train_predict))
+
+    # Baseline Testing Set Predictions
+    print("Testing Set (Baseline)")
+    base_test_predict = logi_reg.predict(X_test)
+    print(classification_report(y_test, base_test_predict))
+
+    # Tune Logistic Regression over a GridSearch with cross-validation
+    # TODO See if there are better parameters to test
+    param_grid = [
+        {'C': [0.001, 0.01, 0.1, 1.0, 10, 100, 1000],
+         'class_weight': ['balanced'],
+         'solver': ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']
+        }
+    ]
+    logi_grid = GridSearchCV(logi_reg, param_grid=param_grid, cv=5)
+    filter_warnings()
+    logi_grid.fit(X_train, y_train)
+    filter_warnings(False)
+
+    # Print Best Parameters from GridSearch
+    print(logi_grid.best_params_)
+    print(logi_grid.best_score_)
+    logi_reg = LogisticRegression(**logi_grid.best_params_)
+    logi_reg.fit(X_train, y_train)
+
+    # Training Set Predictions
+    print("Training Set")
+    train_predict = logi_reg.predict(X_train)
+    print(classification_report(y_train, train_predict))
+
+    # Testing Set Predictions
+    print("Testing Set")
+    test_predict = logi_reg.predict(X_test)
+    print(classification_report(y_test, test_predict))
+
+    # TODO Display Data on Chart (baseline and optimized)
 
 
 def good_vs_bad_model(df):
@@ -99,7 +181,8 @@ def good_vs_bad_model(df):
 
 file_path = 'red wine data 1.csv'
 data = pd.read_csv(file_path, encoding='ISO-8859-1')
-df = pd.DataFrame(data)
+wine_df = pd.DataFrame(data)
 
-good_vs_bad_model(df)
+# regression_quality(wine_df)
+# good_vs_bad_model(wine_df)
 
