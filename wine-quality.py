@@ -1,7 +1,4 @@
-import numpy as np
-import pandas as pd
-
-""" 
+"""
     List of models to write:
         - Regression 
         - Good vs. Bad Classification (ex. set <7 good, >7 bad)
@@ -15,8 +12,34 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 import os, sys, warnings
+
+
+# Load your dataset
+file_path = 'red wine data 1.csv'
+data = pd.read_csv(file_path)
+
+# Separate features (X) and target variable (y)
+X = data.drop("quality", axis=1)
+y = data["quality"]
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Initialize and train the Random Forest Classifier
+rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_classifier.fit(X_train, y_train)
+
+# predictions
+predictions = rf_classifier.predict(X_test)
+
+# Model evaluation
+print("Accuracy:", accuracy_score(y_test, predictions))
+print(classification_report(y_test, predictions, zero_division=1))
+
+
 
 
 def filter_warnings(stop_print=True):
