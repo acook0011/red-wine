@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import os, sys, warnings
 
 
-# Load your dataset
+# Load dataset
 file_path = 'red wine data 1.csv'
 data = pd.read_csv(file_path)
 
