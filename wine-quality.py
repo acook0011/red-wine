@@ -10,7 +10,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, f1_score
 from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
@@ -32,8 +32,8 @@ def filter_warnings(stop_print=True):
 
 def quality_classification(df):
     # Separate features (X) and target variable (y)
-    y = data["quality"]
-    X = data.drop("quality", axis=1)
+    y = df["quality"]
+    X = df.drop("quality", axis=1)
 
     # Train-test split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -68,21 +68,21 @@ def regression_quality(df):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=21, stratify=y)
 
     # Create a Logistic Regression Model
-    logi_reg = LogisticRegression()
+    logi_reg_base = LogisticRegression()
 
     # Baseline Logistic Regression Model
     filter_warnings()
-    logi_reg.fit(X_train, y_train)
+    logi_reg_base.fit(X_train, y_train)
     filter_warnings(False)
 
     # Baseline Training Set Predictions
     print("Training Set (Baseline)")
-    base_train_predict = logi_reg.predict(X_train)
+    base_train_predict = logi_reg_base.predict(X_train)
     print(classification_report(y_train, base_train_predict))
 
     # Baseline Testing Set Predictions
     print("Testing Set (Baseline)")
-    base_test_predict = logi_reg.predict(X_test)
+    base_test_predict = logi_reg_base.predict(X_test)
     print(classification_report(y_test, base_test_predict))
 
     # Tune Logistic Regression over a GridSearch with cross-validation
@@ -93,28 +93,48 @@ def regression_quality(df):
          'solver': ['lbfgs', 'liblinear', 'newton-cg', 'newton-cholesky', 'sag', 'saga']
         }
     ]
-    logi_grid = GridSearchCV(logi_reg, param_grid=param_grid, cv=5)
+    logi_grid_opti = GridSearchCV(logi_reg_base, param_grid=param_grid, cv=5)
     filter_warnings()
-    logi_grid.fit(X_train, y_train)
+    logi_grid_opti.fit(X_train, y_train)
     filter_warnings(False)
 
     # Print Best Parameters from GridSearch
-    print(logi_grid.best_params_)
-    print(logi_grid.best_score_)
-    logi_reg = LogisticRegression(**logi_grid.best_params_)
+    print(logi_grid_opti.best_params_)
+    print(logi_grid_opti.best_score_)
+    logi_reg = LogisticRegression(**logi_grid_opti.best_params_)
     logi_reg.fit(X_train, y_train)
 
     # Training Set Predictions
     print("Training Set")
-    train_predict = logi_reg.predict(X_train)
-    print(classification_report(y_train, train_predict))
+    opti_train_predict = logi_reg.predict(X_train)
+    print(classification_report(y_train, opti_train_predict))
 
     # Testing Set Predictions
     print("Testing Set")
-    test_predict = logi_reg.predict(X_test)
-    print(classification_report(y_test, test_predict))
+    opti_test_predict = logi_reg.predict(X_test)
+    print(classification_report(y_test, opti_test_predict))
 
-    # TODO Display Data on Chart (baseline and optimized)
+    # Display Data on Chart (baseline and optimized)
+    title = "Logistic Regression Quality: Weighted Averages"
+    label_list = ["Base Training", "Base Testing", "Tuned Training", "Tuned Testing"]
+    accuracies = [f1_score(y_train, base_train_predict, average="weighted"),
+                  f1_score(y_test, base_test_predict, average="weighted"),
+                  f1_score(y_train, opti_train_predict, average="weighted"),
+                  f1_score(y_test, opti_test_predict, average="weighted")]
+    difference = []
+    labels = []
+    for a, la in zip(accuracies, label_list):
+        # Prints accuracy on chart
+        a_percent = round(a*100, 2)
+        labels.append(la + "\n" + str(a_percent) + "%")
+        # Calculates difference for top portion of bar chart
+        diff = 1 - a
+        difference.append(diff)
+    plt.bar(labels, accuracies, color="#80b870")
+    plt.bar(labels, difference, bottom=accuracies, color="#f04f4d")
+    plt.legend(["Correct", "Wrong"])
+    plt.title(title)
+    plt.show()
 
 
 def good_vs_bad_model(df):
@@ -203,6 +223,6 @@ wine_df = pd.DataFrame(data)
 
 # TODO uncomment to run models
 # quality_classification(wine_df)
-# regression_quality(wine_df)
+regression_quality(wine_df)
 # good_vs_bad_model(wine_df)
 
