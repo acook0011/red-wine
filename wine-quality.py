@@ -17,31 +17,6 @@ import matplotlib.pyplot as plt
 import os, sys, warnings
 
 
-# Load dataset
-file_path = 'red wine data 1.csv'
-data = pd.read_csv(file_path)
-
-# Separate features (X) and target variable (y)
-X = data.drop("quality", axis=1)
-y = data["quality"]
-
-# Train-test split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Initialize and train the Random Forest Classifier
-rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
-rf_classifier.fit(X_train, y_train)
-
-# predictions
-predictions = rf_classifier.predict(X_test)
-
-# Model evaluation
-print("Accuracy:", accuracy_score(y_test, predictions))
-print(classification_report(y_test, predictions, zero_division=1))
-
-
-
-
 def filter_warnings(stop_print=True):
     """ Used for ignoring ConvergenceWarning Spam that come from terminating on max iterations
         False: "default" = Print warnings in terminal
@@ -53,6 +28,26 @@ def filter_warnings(stop_print=True):
     if not sys.warnoptions:
         warnings.simplefilter("ignore")
         os.environ["PYTHONWARNINGS"] = state
+
+
+def quality_classification(df):
+    # Separate features (X) and target variable (y)
+    y = data["quality"]
+    X = data.drop("quality", axis=1)
+
+    # Train-test split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # Initialize and train the Random Forest Classifier
+    rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+    rf_classifier.fit(X_train, y_train)
+
+    # predictions
+    predictions = rf_classifier.predict(X_test)
+
+    # Model evaluation
+    print("Accuracy:", accuracy_score(y_test, predictions))
+    print(classification_report(y_test, predictions, zero_division=1))
 
 
 def regression_quality(df):
@@ -206,6 +201,8 @@ file_path = 'red wine data 1.csv'
 data = pd.read_csv(file_path, encoding='ISO-8859-1')
 wine_df = pd.DataFrame(data)
 
+# TODO uncomment to run models
+# quality_classification(wine_df)
 # regression_quality(wine_df)
 # good_vs_bad_model(wine_df)
 
