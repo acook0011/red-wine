@@ -223,6 +223,6 @@ wine_df = pd.DataFrame(data)
 
 # TODO uncomment to run models
 # quality_classification(wine_df)
-regression_quality(wine_df)
+# regression_quality(wine_df)
 # good_vs_bad_model(wine_df)
 
