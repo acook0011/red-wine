@@ -3,6 +3,7 @@
         - Regression 
         - Good vs. Bad Classification (ex. set <7 good, >7 bad)
         - Exact Quality Classification? (possible classifications in dataset: 3, 4, 5, 6, 7, 8)
+        - Neural network
 """
 ############## Classification Model ####################
 import pandas as pd
@@ -226,3 +227,26 @@ wine_df = pd.DataFrame(data)
 # regression_quality(wine_df)
 # good_vs_bad_model(wine_df)
 
+
+############## Keras Neural Network ####################
+def Neural_network(df):
+    # Separate features (X) and target variable (y)
+    y = df["quality"]
+    X = df.drop("quality", axis=1)
+
+    # Train-test split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    model = Sequential()
+    # Added the input layers for all sections of data
+    model.add(Dense(12, activation='sigmoid', input_shape=(11,)))
+    # Add hidden layers to model 
+    model.add(Dense(9, activation='sigmoid'))
+    # Only one output wanted once data is assessed 
+    model.add(Dense(1, activation='sigmoid'))
+    
+    model.compile(loss='binary_crossentropy',optimizer='adam', metrics=['accuracy'])              
+    Needed = model.fit(X_train, y_train,epochs=20, batch_size=3, verbose=3)
+    print(Needed)
+ 
+#Neural_network(wine_df)
