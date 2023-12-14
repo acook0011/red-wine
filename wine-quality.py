@@ -258,9 +258,9 @@ def Neural_network(df):
     y_pred[0:10]
 
     accuracytrain = model.evaluate(X_test, y_test, verbose=0)
-    print('Train Accuracy: % acc')
+    print(accuracytrain, 'Train Accuracy: % acc')
     accuracytest = model.evaluate(X_train, y_train, verbose=0)
-    print('Test Accuracy: % acc')
+    print(accuracytest, 'Test Accuracy: % acc')
 
     print(pd.DataFrame(metrics.confusion_matrix(y_test, y_pred, labels=[0 ,1]), index=['true:White', 'true:Red'], columns=['pred:White', 'pred:Red']))
 
