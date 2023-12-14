@@ -218,46 +218,43 @@ def good_vs_bad_model(df):
 
 
 ############## Keras Neural Network ####################
-def Neural_network(df):
-    # Separate features (X) and target variable (y)
-    y = df["quality"]
-    X = df.drop("quality", axis=1)
+def Neural_network(wine_df):
+    result = wine.copy()
+    for feature_name in wine.columns:
+        max_value = wine[feature_name].max()
+        min_value = wine[feature_name].min()
+        result[feature_name] = (wine[feature_name] - min_value) / (max_value - min_value)
+    return result
+    
+red=normalize(wine_df)
 
-    # Train-test split
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+x = wine_df.iloc[:,[0,1,2,3,4,5,6,7,8,9,10]].values
+y = wine_df.iloc[:,11].values
 
-    model = Sequential()
-    # Added the input layers for all sections of data
-    model.add(Dense(12, activation='sigmoid', input_shape=(11,)))
-    # Add hidden layers to model
-    model.add(Dense(9, activation='relu'))
-    # Only one output wanted once data is assessed
-    model.add(Dense(1, activation='sigmoid'))
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.25,random_state=0)
 
-    model.compile(loss='binary_crossentropy',optimizer='adam', metrics=['accuracy'])
-    Needed = model.fit(X_train, y_train,epochs=20, batch_size=2, verbose=2)
-    print(Needed)
+## Classifing the variables using Logistic Regression
 
-    #Now we need to predict the changes from this neural model
-    y_pred = (model.predict(X_test))
-    y_pred[0:10]
+classifier=LogisticRegression(random_state=0)
+classifier.fit(x_train,y_train)
 
-    accuracytrain = model.evaluate(X_test, y_test, verbose=0)
-    print(accuracytrain, 'Train Accuracy: % acc')
-    accuracytest = model.evaluate(X_train, y_train, verbose=0)
-    print(accuracytest, 'Test Accuracy: % acc')
+y_pred=classifier.predict(x_test)
 
-    print(pd.DataFrame(metrics.confusion_matrix(y_test, y_pred, labels=[0 ,1]), index=['true:White', 'true:Red'], columns=['pred:White', 'pred:Red']))
+accuracy = accuracy_score(y_test,y_pred)
 
-    # plot accuracy with training only to see if the accuracy is better
-    plt.title('Accuracy for training')
-    plt.plot(Needed.history['accuracy'], label='Training accuracy')
-    plt.legend()
+#print(accuracy)
 
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.25,random_state=0)
 
-file_path = 'red wine data 1.csv'
-data = pd.read_csv(file_path, encoding='ISO-8859-1')
-wine_df = pd.DataFrame(data)
+model = MLPClassifier(hidden_layer_sizes=(200,200), max_iter=200000)
+model.fit(x, y)
+predicted_class=model.predict(x_test)
+accuracy = accuracy_score(y_test,predicted_class)
+
+report=classification_report(y_test, y_pred)
+reports = precision_score(y_test, y_pred, zero_division=0, average='weighted')
+print(reports)
+print(report)
 
 # uncomment to run models
 quality_classification(wine_df)
