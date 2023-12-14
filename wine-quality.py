@@ -245,7 +245,7 @@ def Neural_network(df):
     # Added the input layers for all sections of data
     model.add(Dense(12, activation='sigmoid', input_shape=(11,)))
     # Add hidden layers to model 
-    model.add(Dense(9, activation='sigmoid'))
+    model.add(Dense(9, activation='relu'))
     # Only one output wanted once data is assessed 
     model.add(Dense(1, activation='sigmoid'))
     
