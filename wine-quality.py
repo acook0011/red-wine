@@ -217,7 +217,7 @@ def good_vs_bad_model(df):
     plt.show()
 
 
-############## Keras Neural Network ####################
+############## Neural Network ####################
 def Neural_network(wine_df):
     result = wine.copy()
     for feature_name in wine.columns:
@@ -242,7 +242,7 @@ y_pred=classifier.predict(x_test)
 
 accuracy = accuracy_score(y_test,y_pred)
 
-#print(accuracy)
+print(accuracy)
 
 x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.25,random_state=0)
 
