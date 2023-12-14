@@ -246,7 +246,23 @@ def Neural_network(df):
     model.add(Dense(1, activation='sigmoid'))
     
     model.compile(loss='binary_crossentropy',optimizer='adam', metrics=['accuracy'])              
-    Needed = model.fit(X_train, y_train,epochs=20, batch_size=3, verbose=3)
+    Needed = model.fit(X_train, y_train,epochs=20, batch_size=2, verbose=2)
     print(Needed)
+
+    #Now we need to predict the changes from this neural model
+    y_pred = (model.predict(X_test))
+    y_pred[0:10]
+
+    accuracytrain = model.evaluate(X_test, y_test, verbose=0)
+    print('Train Accuracy: % acc)
+    accuracytest = model.evaluate(X_train, y_train, verbose=0)
+    print('Test Accuracy: % acc)
+
+    print(pd.DataFrame(metrics.confusion_matrix(y_test, y_pred, labels=[0 ,1]), index=['true:White', 'true:Red'], columns=['pred:White', 'pred:Red']))
+
+    # plot accuracy with training only to see if the accuracy is better
+    pyplot.title('Accuracy for training')
+    pyplot.plot(Needed.history['accuracy'], label='Training accuracy')
+    pyplot.legend()
  
 #Neural_network(wine_df)
