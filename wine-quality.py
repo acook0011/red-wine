@@ -16,7 +16,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 import os, sys, warnings
-from sklearn import metrics 
+from sklearn import metrics
 import tensorflow as tf
 from tensorflow import Dense
 from tensorflow import Sequential
@@ -91,7 +91,6 @@ def regression_quality(df):
     print(classification_report(y_test, base_test_predict))
 
     # Tune Logistic Regression over a GridSearch with cross-validation
-    # TODO See if there are better parameters to test
     param_grid = [
         {'C': [0.001, 0.01, 0.1, 1.0, 10, 100, 1000],
          'class_weight': ['balanced'],
@@ -177,10 +176,6 @@ def good_vs_bad_model(df):
     print(f"Validation Accuracy: {val_accuracy:.2f}")
     print(classification_report(y_val, X_val_predict))
 
-    # TODO adjust classifier hyperparameters until quality 2's f1-score is good on validation set
-    # Getting best f1-score for quality 2 should be top priority here since we want the top 18 wines
-    # Accuracy is as high as it is because there is a ton of scores that are -1 that clf gets right. -A
-
     # Train the model on full training set after finding optimal hyperparameters
     clf.fit(X_train_full, y_train_full)
 
@@ -193,7 +188,6 @@ def good_vs_bad_model(df):
     # Make predictions on the entire dataset
     df['predicted_quality'] = clf.predict(imputer.transform(X))
 
-    # TODO Appeared unnecessary, so I sorted w/o filter. Didn't delete in case you need it. -A
     # Filter out rows with predicted quality equal to 2
     # df_filtered = df.loc[df['predicted_quality'] == 2]
     # df_filtered = df[df['predicted_quality'] >= 2]
@@ -222,16 +216,6 @@ def good_vs_bad_model(df):
     plt.show()
 
 
-file_path = 'red wine data 1.csv'
-data = pd.read_csv(file_path, encoding='ISO-8859-1')
-wine_df = pd.DataFrame(data)
-
-# TODO uncomment to run models
-# quality_classification(wine_df)
-# regression_quality(wine_df)
-# good_vs_bad_model(wine_df)
-
-
 ############## Keras Neural Network ####################
 def Neural_network(df):
     # Separate features (X) and target variable (y)
@@ -244,12 +228,12 @@ def Neural_network(df):
     model = Sequential()
     # Added the input layers for all sections of data
     model.add(Dense(12, activation='sigmoid', input_shape=(11,)))
-    # Add hidden layers to model 
+    # Add hidden layers to model
     model.add(Dense(9, activation='relu'))
-    # Only one output wanted once data is assessed 
+    # Only one output wanted once data is assessed
     model.add(Dense(1, activation='sigmoid'))
-    
-    model.compile(loss='binary_crossentropy',optimizer='adam', metrics=['accuracy'])              
+
+    model.compile(loss='binary_crossentropy',optimizer='adam', metrics=['accuracy'])
     Needed = model.fit(X_train, y_train,epochs=20, batch_size=2, verbose=2)
     print(Needed)
 
@@ -268,6 +252,15 @@ def Neural_network(df):
     plt.title('Accuracy for training')
     plt.plot(Needed.history['accuracy'], label='Training accuracy')
     plt.legend()
- 
-#Neural_network(wine_df)
+
+
+file_path = 'red wine data 1.csv'
+data = pd.read_csv(file_path, encoding='ISO-8859-1')
+wine_df = pd.DataFrame(data)
+
+# uncomment to run models
+quality_classification(wine_df)
+regression_quality(wine_df)
+good_vs_bad_model(wine_df)
+Neural_network(wine_df)
 
