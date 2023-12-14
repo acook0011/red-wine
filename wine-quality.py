@@ -17,10 +17,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 import os, sys, warnings
-from sklearn import metrics
-import tensorflow as tf
-from tensorflow import Dense
-from tensorflow import Sequential
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import confusion_matrix
 
 
 def filter_warnings(stop_print=True):
@@ -249,7 +247,8 @@ x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.25,random_state=0
 model = MLPClassifier(hidden_layer_sizes=(200,200), max_iter=200000)
 model.fit(x, y)
 predicted_class=model.predict(x_test)
-accuracy = accuracy_score(y_test,predicted_class)
+accuracyme = accuracy_score(y_test,predicted_class)
+print(accuracyme)
 
 report=classification_report(y_test, y_pred)
 reports = precision_score(y_test, y_pred, zero_division=0, average='weighted')
