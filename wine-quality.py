@@ -16,6 +16,10 @@ from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 import os, sys, warnings
+from sklearn import metrics 
+import tensorflow as tf
+from tensorflow import Dense
+from tensorflow import Sequential
 
 
 def filter_warnings(stop_print=True):
@@ -254,15 +258,16 @@ def Neural_network(df):
     y_pred[0:10]
 
     accuracytrain = model.evaluate(X_test, y_test, verbose=0)
-    print('Train Accuracy: % acc)
+    print('Train Accuracy: % acc')
     accuracytest = model.evaluate(X_train, y_train, verbose=0)
-    print('Test Accuracy: % acc)
+    print('Test Accuracy: % acc')
 
     print(pd.DataFrame(metrics.confusion_matrix(y_test, y_pred, labels=[0 ,1]), index=['true:White', 'true:Red'], columns=['pred:White', 'pred:Red']))
 
     # plot accuracy with training only to see if the accuracy is better
-    pyplot.title('Accuracy for training')
-    pyplot.plot(Needed.history['accuracy'], label='Training accuracy')
-    pyplot.legend()
+    plt.title('Accuracy for training')
+    plt.plot(Needed.history['accuracy'], label='Training accuracy')
+    plt.legend()
  
 #Neural_network(wine_df)
+
