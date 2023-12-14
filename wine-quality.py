@@ -1,9 +1,10 @@
 """
-    List of models to write:
-        - Regression 
-        - Good vs. Bad Classification (ex. set <7 good, >7 bad)
-        - Exact Quality Classification? (possible classifications in dataset: 3, 4, 5, 6, 7, 8)
-        - Neural network
+    Using a variety of Machine Learning methods to predict the quality of red wines
+
+    Dataset borrowed from: https://www.kaggle.com/datasets/uciml/red-wine-quality-cortez-et-al-2009
+    P. Cortez, A. Cerdeira, F. Almeida, T. Matos and J. Reis.
+    Modeling wine preferences by data mining from physicochemical properties.
+    In Decision Support Systems, Elsevier, 47(4):547-553, 2009.
 """
 ############## Classification Model ####################
 import pandas as pd
